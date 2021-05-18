@@ -11,7 +11,6 @@ class genericDataset(InMemoryDataset):
 
     def __init__(self, root, name, transform=None, pre_transform=None):
         self.name = name.lower()
-        assert self.name == 'retweet'
 
         super(genericDataset, self).__init__(root, transform, pre_transform)
         self.data, self.slices = torch.load(self.processed_paths[0])
@@ -70,29 +69,22 @@ class GraphAttentionEmbedding(torch.nn.Module):
         edge_attr = torch.cat([rel_t_enc, msg], dim=-1)
         return self.conv(x, edge_index, edge_attr)
 
-
-class LinkPredictor_global(torch.nn.Module):
-    def __init__(self, in_channels, global_in_channel):
-        super(LinkPredictor_global, self).__init__()
-        self.lin_src = Linear(in_channels+global_in_channel, in_channels+global_in_channel)
-        self.lin_dst = Linear(in_channels+global_in_channel, in_channels+global_in_channel)
-        self.lin_final = Linear(in_channels+global_in_channel,1)
-
-    def forward(self, z_src, z_dst, z_global):
-        z_global_repeat = z_global.view(1,-1).repeat(z_src.size()[0], 1)
-        h = self.lin_src(torch.cat((z_src, z_global_repeat), dim=1)) + self.lin_dst(torch.cat((z_dst, z_global_repeat), dim=1))
-        # print(h.size())
-        h = h.relu()
-        return self.lin_final(h)
-
-class LinkPredictor(torch.nn.Module):
+class LinkPredictor_khop(torch.nn.Module):
     def __init__(self, in_channels):
-        super(LinkPredictor, self).__init__()
+        super(LinkPredictor_khop, self).__init__()
         self.lin_src = Linear(in_channels, in_channels)
         self.lin_dst = Linear(in_channels, in_channels)
+        self.lin_src_local = Linear(in_channels, in_channels)
+        self.lin_dst_local = Linear(in_channels, in_channels)
         self.lin_final = Linear(in_channels, 1)
 
-    def forward(self, z_src, z_dst):
+    def forward(self, z_src, z_dst, z_src_local, z_dst_local):
+
         h = self.lin_src(z_src) + self.lin_dst(z_dst)
+        h2 = self.lin_src_local(z_src_local) + self.lin_dst_local(z_dst_local)
+        
+        # print(h.size())
+        # print(h2.size())
+        h = h + h2
         h = h.relu()
         return self.lin_final(h)
