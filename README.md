@@ -4,16 +4,18 @@ Extensions to the TGN Framework proposed by Rossi et. al. <https://arxiv.org/abs
 
 ## Running One Hop Neighbourhood Aggregation experiments
 
+Install PyTorch Geometric from [here](https://pytorch-geometric.readthedocs.io/en/latest/notes/installation.html) or follow the instructions below. 
+ 
 ### For PyTorch 1.8 and CUDA version cu101, :
 
 ```sh
-$ pip install torch-scatter -f https://pytorch-geometric.com/whl/torch-1.8.0+cu101.html
-$ pip install torch-sparse -f https://pytorch-geometric.com/whl/torch-1.8.0+cu101.html
-$ pip install torch-cluster -f https://pytorch-geometric.com/whl/torch-1.8.0+cu101.html
-$ pip install torch-spline-conv -f https://pytorch-geometric.com/whl/torch-1.8.0+cu101.html
-$ pip install git+https://github.com/rusty1s/pytorch_geometric.git
+
+$ vpip install torch-scatter -f https://data.pyg.org/whl/torch-${TORCH}+${CUDA}.html
+$ pip install torch-sparse -f https://data.pyg.org/whl/torch-${TORCH}+${CUDA}.html
+$ pip install torch-geometric
+
 ```
-If your PyTorch and/or CUDA versions are different, just replace the appropriate versions instead of 1.8.0 and cu101
+Just replace {TORCH} and {CUDA} with the appropriate PyTorch and CUDA versions like of 1.8.0 and cu101
 
 ### Other requirements
 
@@ -30,5 +32,3 @@ sklearn==0.22.2
 cd src
 python run.py
 ```
-
-or run the iPython Notebook src/run.ipynb
